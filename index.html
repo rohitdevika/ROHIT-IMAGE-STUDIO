@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROHIT IMAGE STUDIO PRO</title>
+
+<style>
+:root {
+ --bg:#090e1b;
+ --panel:#131d32;
+ --line:#2b3a59;
+ --text:#eef3ff;
+ --muted:#9eacc8;
+ --accent:#8065ff;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;background:var(--bg);color:var(--text);
+ font:14px Arial,sans-serif;
+}
+header{
+ padding:16px;background:#10182a;
+ border-bottom:1px solid var(--line);
+ position:sticky;top:0;z-index:5;
+}
+h1{font-size:20px;margin:0}
+header small{color:var(--muted)}
+main{
+ max-width:1200px;margin:auto;padding:12px;
+ display:grid;gap:12px;
+}
+.panel{
+ background:var(--panel);
+ border:1px solid var(--line);
+ border-radius:14px;padding:12px;
+ min-width:0;
+}
+.controls{display:grid;gap:12px}
+.group{border-bottom:1px solid var(--line);padding-bottom:12px}
+h2{font-size:14px;color:#c8d4f0}
+label{
+ display:block;color:var(--muted);
+ font-size:12px;margin:6px 0 4px;
+}
+input,select,button{
+ width:100%;padding:10px;
+ border:1px solid #354564;
+ border-radius:8px;
+ background:#0c1528;color:white;
+ font:inherit;
+}
+input[type=color]{height:40px;padding:3px}
+input[type=range]{padding:0}
+button{cursor:pointer;background:#202e4d}
+button.primary{background:var(--accent)}
+button.danger{background:#4a2333}
+.grid2{
+ display:grid;grid-template-columns:1fr 1fr;gap:8px;
+}
+.stage{
+ background:#070b14;
+ border:1px dashed #405071;
+ border-radius:12px;
+ min-height:260px;
+ display:flex;align-items:center;
+ justify-content:center;
+ overflow:auto;padding:8px;
+}
+canvas{max-width:100%;height:auto;touch-action:none}
+#empty{color:#91a0bd;text-align:center;padding:45px}
+.hint{font-size:11px;color:var(--muted);line-height:1.5}
+.status{font-size:12px;color:#b9c7e5;margin-top:8px}
+.layerlist{display:grid;gap:5px;max-height:150px;overflow:auto}
+.layerlist button.active{border-color:#9c88ff;background:#30265d}
+@media(min-width:850px){
+ main{grid-template-columns:320px 1fr}
+ .editor{position:sticky;top:85px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>ROHIT IMAGE STUDIO PRO</h1>
+<small>Image • Text • Layers • Replace • Export</small>
+</header>
+
+<main>
+
+<section class="panel controls">
+
+<div class="group">
+<h2>1. Open Image</h2>
+<label>Background Image</label>
+<input id="baseFile" type="file" accept="image/*">
+<p class="hint">Your images stay on your device.</p>
+</div>
+
+<div class="group">
+<h2>2. Add / Replace Picture</h2>
+<label>Select New Picture</label>
+<input id="addImage" type="file" accept="image/*">
+
+<label>Picture Size: <span id="scaleVal">100%</span></label>
+<input id="scale" type="range" min="10" max="300" value="100">
+<p class="hint">Select and drag the added picture to change its position.</p>
+</div>
+
+<div class="group">
+<h2>3. Text Editor</h2>
+
+<label>Enter Text</label>
+<input id="textValue" placeholder="Write your text">
+
+<div class="grid2">
+<div>
+<label>Font</label>
+<select id="font">
+<option>Arial</option>
+<option>Georgia</option>
+<option>Impact</option>
+<option>Verdana</option>
+<option>Courier New</option>
+<option>Times New Roman</option>
+</select>
+</div>
+
+<div>
+<label>Font Size</label>
+<input id="fontSize" type="number" min="8" max="300" value="42">
+</div>
+
+<div>
+<label>Text Color</label>
+<input id="textColor" type="color" value="#ffffff">
+</div>
+
+<div>
+<label>Outline Color</label>
+<input id="strokeColor" type="color" value="#111111">
+</div>
+</div>
+
+<div class="grid2">
+<button id="addText" class="primary">+ Add Text</button>
+<button id="updateText">Update Text</button>
+</div>
+</div>
+
+<div class="group">
+<h2>4. Erase / Paint</h2>
+
+<div class="grid2">
+<div>
+<label>Tool</label>
+<select id="tool">
+<option value="paint">Paint Over</option>
+<option value="erase">Erase Layers</option>
+</select>
+</div>
+
+<div>
+<label>Brush Color</label>
+<input id="brushColor" type="color" value="#ffffff">
+</div>
+</div>
+
+<label>Brush Size: <span id="brushVal">24</span></label>
+<input id="brushSize" type="range" min="2" max="180" value="24">
+</div>
+
+<div class="group">
+<h2>5. Layers Manager</h2>
+<div id="layers" class="layerlist">
+<span class="hint">No added layers yet.</span>
+</div>
+
+<div class="grid2">
+<button id="front">Bring Forward</button>
+<button id="back">Send Backward</button>
+<button id="delete" class="danger">Delete Layer</button>
+<button id="deselect">Deselect</button>
+<button id="undo">Undo</button>
+<button id="redo">Redo</button>
+<button id="reset">Reset All</button>
+<button id="download" class="primary">Download PNG</button>
+</div>
+</div>
+
+<div class="status" id="status">
+Upload an image to begin.
+</div>
+
+</section>
+
+<section class="panel editor">
+<div class="stage" id="stage">
+<div id="empty">
+Your image will appear here.<br>
+Upload an image to start editing.
+</div>
+<canvas id="canvas" hidden></canvas>
+</div>
+<p class="hint">
+Tap an object to select it. Drag to move.
+Use the corner handle to resize.
+</p>
+</section>
+
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const c=$('canvas');
+const x=c.getContext('2d');
+
+let base=null;
+let baseLayer=null;
+let objects=[];
+let selected=-1;
+let painting=false;
+let last=null;
+let undoStack=[];
+let redoStack=[];
+let drag=null;
+
+const say=s=>$('status').textContent=s;
+
+function cloneState(){
+ return JSON.stringify({
+  objects:objects.map(o=>o.type==='image'
+   ? {...o,imgSrc:o.img.src}
+   : {...o}),
+  selected,
+  baseData:baseLayer.toDataURL('image/png')
+ });
+}
+
+function save(){
+ if(!base)return;
+ undoStack.push(cloneState());
+ if(undoStack.length>35)undoStack.shift();
+ redoStack=[];
+ syncButtons();
+}
+
+function syncButtons(){
+ $('undo').disabled=!undoStack.length;
+ $('redo').disabled=!redoStack.length;
+}
+
+function imageFromFile(file,callback){
+ if(!file || !file.type.startsWith('image/')){
+  say('Choose a valid image.');
+  return;
+ }
+ const reader=new FileReader();
+ reader.onload=()=>{
+  const im=new Image();
+  im.onload=()=>callback(im);
+  im.onerror=()=>say('Unable to open image.');
+  im.src=reader.result;
+ };
+ reader.readAsDataURL(file);
+}
+
+function draw(){
+ if(!base)return;
+
+ x.clearRect(0,0,c.width,c.height);
+ x.drawImage(baseLayer,0,0);
+
+ objects.forEach(o=>{
+  if(o.type==='image'){
+   x.drawImage(o.img,o.x,o.y,o.w,o.h);
+  }else{
+   x.save();
+   x.font=`${o.size}px "${o.font}"`;
+   x.textBaseline='top';
+   x.lineJoin='round';
+
+   if(o.stroke){
+    x.strokeStyle=o.stroke;
+    x.lineWidth=Math.max(2,o.size/14);
+    x.strokeText(o.text,o.x,o.y);
+   }
+
+   x.fillStyle=o.color;
+   x.fillText(o.text,o.x,o.y);
+   x.restore();
+  }
+ });
+
+ if(selected>=0 && objects[selected]){
+  const o=objects[selected];
+  x.save();
+  x.strokeStyle='#8d79ff';
+  x.lineWidth=3;
+  x.setLineDash([7,5]);
+  x.strokeRect(o.x,o.y,o.w,o.h);
+  x.setLineDash([]);
+  x.fillStyle='#8d79ff';
+  x.fillRect(o.x+o.w-7,o.y+o.h-7,14,14);
+  x.restore();
+ }
+}
+
+function fitView(){
+ const maxW=Math.max(240,$('stage').clientWidth-18);
+ const scale=Math.min(1,maxW/c.width);
+ c.style.width=(c.width*scale)+'px';
+ c.style.height=(c.height*scale)+'px';
+}
+
+function loadBase(file){
+ imageFromFile(file,im=>{
+  base=im;
+  c.width=im.naturalWidth;
+  c.height=im.naturalHeight;
+
+  baseLayer=document.createElement('canvas');
+  baseLayer.width=c.width;
+  baseLayer.height=c.height;
+  baseLayer.getContext('2d').drawImage(im,0,0);
+
+  objects=[];
+  selected=-1;
+  undoStack=[];
+  redoStack=[];
+
+  $('empty').hidden=true;
+  c.hidden=false;
+
+  fitView();
+  draw();
+  renderLayers();
+  syncButtons();
+
+  say('Background image loaded successfully.');
+ });
+}
+
+$('baseFile').onchange=e=>loadBase(e.target.files[0]);
+
+function addImage(im){
+ save();
+
+ const ratio=Math.min(
+  c.width*.45/im.width,
+  c.height*.45/im.height,
+  1
+ );
+
+ objects.push({
+  type:'image',
+  img:im,
+  x:(c.width-im.width*ratio)/2,
+  y:(c.height-im.height*ratio)/2,
+  w:im.width*ratio,
+  h:im.height*ratio
+ });
+
+ selected=objects.length-1;
+ draw();
+ renderLayers();
+ updateScale();
+ say('Picture added. Move and resize it.');
+}
+
+$('addImage').onchange=e=>{
+ imageFromFile(e.target.files[0],addImage);
+};
+
+function addText(){
+ if(!base)return say('Upload a background image first.');
+
+ const text=$('textValue').value.trim();
+ if(!text)return say('Enter some text.');
+
+ save();
+
+ const size=Math.max(8,Number($('fontSize').value)||42);
+ x.font=`${size}px "${$('font').value}"`;
+
+ const w=x.measureText(text).width;
+
+ objects.push({
+  type:'text',
+  text,
+  x:c.width*.1,
+  y:c.height*.1,
+  w,
+  h:size*1.25,
+  size,
+  font:$('font').value,
+  color:$('textColor').value,
+  stroke:$('strokeColor').value
+ });
+
+ selected=objects.length-1;
+ draw();
+ renderLayers();
+ say('Text added. Drag it to position.');
+}
+
+$('addText').onclick=addText;
+
+$('updateText').onclick=()=>{
+ const o=objects[selected];
+
+ if(!o || o.type!=='text')
+  return say('Select a text layer first.');
+
+ const t=$('textValue').value.trim();
+ if(!t)return say('Enter replacement text.');
+
+ save();
+
+ o.text=t;
+ o.size=Math.max(8,Number($('fontSize').value)||42);
+ o.font=$('font').value;
+ o.color=$('textColor').value;
+ o.stroke=$('strokeColor').value;
+
+ x.font=`${o.size}px "${o.font}"`;
+ o.w=x.measureText(t).width;
+ o.h=o.size*1.25;
+
+ draw();
+ renderLayers();
+ say('Text updated.');
+};
+
+function renderLayers(){
+ const el=$('layers');
+ el.innerHTML='';
+
+ if(!objects.length){
+  el.innerHTML='<span class="hint">No added layers yet.</span>';
+  return;
+ }
+
+ objects.forEach((o,i)=>{
+  const b=document.createElement('button');
+
+  b.textContent=o.type==='text'
+   ? 'T - '+o.text.slice(0,24)
+   : 'Picture '+(i+1);
+
+  b.className=i===selected?'active':'';
+
+  b.onclick=()=>{
+   selected=i;
+   draw();
+   renderLayers();
+   loadFields();
+  };
+
+  el.appendChild(b);
+ });
+}
+
+function loadFields(){
+ const o=objects[selected];
+ if(!o)return;
+
+ if(o.type==='text'){
+  $('textValue').value=o.text;
+  $('fontSize').value=o.size;
+  $('font').value=o.font;
+  $('textColor').value=o.color;
+  $('strokeColor').value=o.stroke||'#111111';
+ }
+
+ updateScale();
+}
+
+function updateScale(){
+ const o=objects[selected];
+
+ if(o && o.type==='image'){
+  const value=Math.round(o.w/o.img.width*100);
+  $('scale').value=Math.min(300,Math.max(10,value));
+  $('scaleVal').textContent=value+'%';
+ }
+}
+
+$('scale').onpointerdown=save;
+
+$('scale').oninput=()=>{
+ const o=objects[selected];
+ if(!o || o.type!=='image')return;
+
+ const pct=Number($('scale').value);
+ $('scaleVal').textContent=pct+'%';
+
+ const nw=o.img.width*pct/100;
+ const nh=o.img.height*pct/100;
+
+ o.x+=(o.w-nw)/2;
+ o.y+=(o.h-nh)/2;
+ o.w=nw;
+ o.h=nh;
+
+ draw();
+};
+
+$('brushSize').oninput=()=>{
+ $('brushVal').textContent=$('brushSize').value;
+};
+
+function pointer(e){
+ const r=c.getBoundingClientRect();
+
+ return {
+  x:(e.clientX-r.left)*c.width/r.width,
+  y:(e.clientY-r.top)*c.height/r.height
+ };
+}
+
+function hit(p){
+ for(let i=objects.length-1;i>=0;i--){
+  const o=objects[i];
+
+  if(p.x>=o.x && p.x<=o.x+o.w &&
+     p.y>=o.y && p.y<=o.y+o.h)
+   return i;
+ }
+ return -1;
+}
+
+function paint(p){
+ const bx=baseLayer.getContext('2d');
+
+ const radius=Number($('brushSize').value)*
+  c.width/c.getBoundingClientRect().width/2;
+
+ bx.save();
+ bx.fillStyle=$('brushColor').value;
+ bx.beginPath();
+ bx.arc(p.x,p.y,radius,0,Math.PI*2);
+ bx.fill();
+ bx.restore();
+
+ draw();
+}
+
+c.addEventListener('pointerdown',e=>{
+ if(!base)return;
+
+ const p=pointer(e);
+
+ if($('tool').value==='paint'){
+  save();
+  painting=true;
+  last=p;
+  paint(p);
+  c.setPointerCapture(e.pointerId);
+  return;
+ }
+
+ if($('tool').value==='erase'){
+  const i=hit(p);
+
+  if(i>=0){
+   save();
+   objects.splice(i,1);
+   selected=-1;
+   draw();
+   renderLayers();
+   say('Layer removed.');
+  }
+  return;
+ }
+
+ const i=hit(p);
+ selected=i;
+
+ if(i>=0){
+  save();
+
+  const o=objects[i];
+  const handle=Math.max(14,c.width/55);
+
+  const onHandle=
+   Math.abs(p.x-(o.x+o.w))<handle &&
+   Math.abs(p.y-(o.y+o.h))<handle;
+
+  drag={
+   kind:onHandle?'resize':'move',
+   i,
+   start:p,
+   ox:o.x,
+   oy:o.y,
+   ow:o.w,
+   oh:o.h
+  };
+
+  c.setPointerCapture(e.pointerId);
+ }
+
+ draw();
+ renderLayers();
+ loadFields();
+});
+
+c.addEventListener('pointermove',e=>{
+ const p=pointer(e);
+
+ if(painting){
+  const bx=baseLayer.getContext('2d');
+
+  const r=Number($('brushSize').value)*
+   c.width/c.getBoundingClientRect().width;
+
+  bx.save();
+  bx.strokeStyle=$('brushColor').value;
+  bx.lineWidth=r;
+  bx.lineCap='round';
+  bx.beginPath();
+  bx.moveTo(last.x,last.y);
+  bx.lineTo(p.x,p.y);
+  bx.stroke();
+  bx.restore();
+
+  last=p;
+  draw();
+  return;
+ }
+
+ if(drag){
+  const o=objects[drag.i];
+
+  if(drag.kind==='move'){
+   o.x=drag.ox+(p.x-drag.start.x);
+   o.y=drag.oy+(p.y-drag.start.y);
+  }else{
+   o.w=Math.max(12,drag.ow+(p.x-drag.start.x));
+   o.h=Math.max(12,drag.oh+(p.y-drag.start.y));
+  }
+
+  draw();
+ }
+});
+
+function end(){
+ painting=false;
+ last=null;
+ drag=null;
+}
+
+c.addEventListener('pointerup',end);
+c.addEventListener('pointercancel',end);
+c.addEventListener('lostpointercapture',end);
+
+$('delete').onclick=()=>{
+ if(selected<0)return;
+
+ save();
+ objects.splice(selected,1);
+ selected=-1;
+
+ draw();
+ renderLayers();
+ say('Selected layer deleted.');
+};
+
+$('deselect').onclick=()=>{
+ selected=-1;
+ draw();
+ renderLayers();
+};
+
+$('front').onclick=()=>{
+ if(selected<0 || selected===objects.length-1)return;
+
+ save();
+
+ const o=objects.splice(selected,1)[0];
+ objects.push(o);
+ selected=objects.length-1;
+
+ draw();
+ renderLayers();
+};
+
+$('back').onclick=()=>{
+ if(selected<=0)return;
+
+ save();
+
+ const o=objects.splice(selected,1)[0];
+ objects.unshift(o);
+ selected=0;
+
+ draw();
+ renderLayers();
+};
+
+function restoreState(state){
+ const s=JSON.parse(state);
+
+ objects=s.objects.map(o=>{
+  if(o.type==='image'){
+   const im=new Image();
+   im.src=o.imgSrc;
+   o.img=im;
+  }
+  return o;
+ });
+
+ selected=s.selected;
+
+ const bg=new Image();
+
+ bg.onload=()=>{
+  baseLayer.width=bg.naturalWidth;
+  baseLayer.height=bg.naturalHeight;
+  baseLayer.getContext('2d').drawImage(bg,0,0);
+  draw();
+  renderLayers();
+ };
+
+ bg.src=s.baseData;
+}
+
+$('undo').onclick=()=>{
+ if(!undoStack.length)return;
+
+ redoStack.push(cloneState());
+ restoreState(undoStack.pop());
+
+ syncButtons();
+ say('Undo complete.');
+};
+
+$('redo').onclick=()=>{
+ if(!redoStack.length)return;
+
+ undoStack.push(cloneState());
+ restoreState(redoStack.pop());
+
+ syncButtons();
+ say('Redo complete.');
+};
+
+$('reset').onclick=()=>{
+ if(!base)return;
+
+ objects=[];
+ selected=-1;
+
+ baseLayer=document.createElement('canvas');
+ baseLayer.width=c.width;
+ baseLayer.height=c.height;
+ baseLayer.getContext('2d').drawImage(base,0,0);
+
+ undoStack=[];
+ redoStack=[];
+
+ draw();
+ renderLayers();
+ syncButtons();
+
+ say('Image reset.');
+};
+
+$('download').onclick=()=>{
+ if(!base)return say('Upload an image first.');
+
+ const out=document.createElement('canvas');
+ out.width=c.width;
+ out.height=c.height;
+
+ const ox=out.getContext('2d');
+
+ ox.drawImage(baseLayer,0,0);
+
+ objects.forEach(o=>{
+  if(o.type==='image'){
+   ox.drawImage(o.img,o.x,o.y,o.w,o.h);
+  }else{
+   ox.font=`${o.size}px "${o.font}"`;
+   ox.textBaseline='top';
+   ox.lineJoin='round';
+
+   if(o.stroke){
+    ox.strokeStyle=o.stroke;
+    ox.lineWidth=Math.max(2,o.size/14);
+    ox.strokeText(o.text,o.x,o.y);
+   }
+
+   ox.fillStyle=o.color;
+   ox.fillText(o.text,o.x,o.y);
+  }
+ });
+
+ const a=document.createElement('a');
+ a.download='rohit-image-studio.png';
+ a.href=out.toDataURL('image/png');
+ a.click();
+
+ say('PNG download started.');
+};
+
+window.addEventListener('resize',()=>{
+ if(base)fitView();
+});
+</script>
+</body>
+</html>
