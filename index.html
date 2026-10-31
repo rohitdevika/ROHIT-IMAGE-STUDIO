@@ -1,813 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ROHIT IMAGE STUDIO PRO</title>
-
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rohit Image Studio Pro</title>
 <style>
-:root {
- --bg:#090e1b;
- --panel:#131d32;
- --line:#2b3a59;
- --text:#eef3ff;
- --muted:#9eacc8;
- --accent:#8065ff;
-}
-*{box-sizing:border-box}
-body{
- margin:0;background:var(--bg);color:var(--text);
- font:14px Arial,sans-serif;
-}
-header{
- padding:16px;background:#10182a;
- border-bottom:1px solid var(--line);
- position:sticky;top:0;z-index:5;
-}
-h1{font-size:20px;margin:0}
-header small{color:var(--muted)}
-main{
- max-width:1200px;margin:auto;padding:12px;
- display:grid;gap:12px;
-}
-.panel{
- background:var(--panel);
- border:1px solid var(--line);
- border-radius:14px;padding:12px;
- min-width:0;
-}
-.controls{display:grid;gap:12px}
-.group{border-bottom:1px solid var(--line);padding-bottom:12px}
-h2{font-size:14px;color:#c8d4f0}
-label{
- display:block;color:var(--muted);
- font-size:12px;margin:6px 0 4px;
-}
-input,select,button{
- width:100%;padding:10px;
- border:1px solid #354564;
- border-radius:8px;
- background:#0c1528;color:white;
- font:inherit;
-}
-input[type=color]{height:40px;padding:3px}
-input[type=range]{padding:0}
-button{cursor:pointer;background:#202e4d}
-button.primary{background:var(--accent)}
-button.danger{background:#4a2333}
-.grid2{
- display:grid;grid-template-columns:1fr 1fr;gap:8px;
-}
-.stage{
- background:#070b14;
- border:1px dashed #405071;
- border-radius:12px;
- min-height:260px;
- display:flex;align-items:center;
- justify-content:center;
- overflow:auto;padding:8px;
-}
-canvas{max-width:100%;height:auto;touch-action:none}
-#empty{color:#91a0bd;text-align:center;padding:45px}
-.hint{font-size:11px;color:var(--muted);line-height:1.5}
-.status{font-size:12px;color:#b9c7e5;margin-top:8px}
-.layerlist{display:grid;gap:5px;max-height:150px;overflow:auto}
-.layerlist button.active{border-color:#9c88ff;background:#30265d}
-@media(min-width:850px){
- main{grid-template-columns:320px 1fr}
- .editor{position:sticky;top:85px}
-}
-</style>
-</head>
-
+:root{--bg:#080f1e;--panel:#101d32;--panel2:#14243d;--line:#263a59;--text:#eaf1ff;--muted:#91a3c0;--accent:#8b5cf6;--blue:#2585ef}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+header{height:54px;padding:9px 15px;background:#0e1729;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}
+.brand{font-weight:800;letter-spacing:.3px}.brand small{display:block;color:var(--muted);font-size:10px;font-weight:500}
+.top-actions{display:flex;gap:7px;align-items:center}button,.btn{border:1px solid var(--line);background:#1b2d4a;color:white;padding:9px 11px;border-radius:9px;font:inherit;cursor:pointer}button:hover,.btn:hover{filter:brightness(1.15)}button.primary{background:var(--accent);border-color:var(--accent)}button.danger{background:#64243a;border-color:#85324d}button:disabled{opacity:.4;cursor:not-allowed}
+.app{display:grid;grid-template-columns:300px minmax(0,1fr);gap:12px;padding:12px;max-width:1500px;margin:auto}
+.sidebar,.workspace{background:var(--panel);border:1px solid var(--line);border-radius:13px;min-width:0}
+.sidebar{padding:12px;height:calc(100vh - 80px);overflow:auto}.section{padding:0 0 14px;margin-bottom:14px;border-bottom:1px solid var(--line)}.section:last-child{border:0}
+h3{font-size:13px;margin:0 0 10px;color:#dce8ff}.hint{font-size:10px;color:var(--muted);margin-top:6px}
+label{display:block;color:#b7c7df;font-size:11px;margin:8px 0 5px}input,select,textarea{width:100%;background:#091426;color:white;border:1px solid #344968;border-radius:8px;padding:9px;font:inherit;min-width:0}input[type=color]{height:36px;padding:3px}input[type=range]{padding:0;accent-color:var(--blue)}input[type=file]{font-size:11px;padding:7px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}.btnrow{display:flex;gap:7px;margin-top:7px}.btnrow>*{flex:1}.tools{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.workspace{padding:12px;display:flex;flex-direction:column;min-height:calc(100vh - 80px)}
+.stagebar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px;color:var(--muted);font-size:11px}
+.stage-wrap{flex:1;min-height:350px;display:grid;place-items:center;background:#070c17;border:1px solid #253752;border-radius:10px;overflow:hidden;position:relative}
+canvas{max-width:100%;max-height:calc(100vh - 170px);width:auto;height:auto;touch-action:none;display:block;background:#111827}
+.empty{position:absolute;color:#93a4bf;text-align:center;pointer-events:none;font-size:13px}
+.layers{display:flex;flex-direction:column;gap:5px;max-height:170px;overflow:auto}
+.layer{padding:8px;border:1px solid var(--line);border-radius:8px;background:#0c192c;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;cursor:pointer}
+.layer.active{border-color:var(--accent);background:#292047}.layer span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.layer small{color:var(--muted)}
+.status{font-size:10px;color:var(--muted);padding-top:8px}
+.mobile-tabs{display:none}
+@media(max-width:760px){header{height:auto;flex-wrap:wrap;gap:8px}.app{display:flex;flex-direction:column;padding:8px}.workspace{order:0;min-height:46vh}.sidebar{order:1;height:auto;overflow:visible}.stage-wrap{min-height:260px}canvas{max-height:42vh}.top-actions button{padding:7px;font-size:11px}}
+</style></head>
 <body>
-
-<header>
-<h1>ROHIT IMAGE STUDIO PRO</h1>
-<small>Image • Text • Layers • Replace • Export</small>
-</header>
-
-<main>
-
-<section class="panel controls">
-
-<div class="group">
-<h2>1. Open Image</h2>
-<label>Background Image</label>
-<input id="baseFile" type="file" accept="image/*">
-<p class="hint">Your images stay on your device.</p>
+<header><div class="brand">ROHIT IMAGE STUDIO PRO <small>Image • Text • Layers • Replace • Export</small></div>
+<div class="top-actions"><button id="undoTop">↶</button><button id="redoTop">↷</button><button class="primary" id="exportTop">Export PNG</button></div></header>
+<div class="app">
+<aside class="sidebar">
+ <section class="section"><h3>1. Open Image</h3><label>Background image</label><input id="bgFile" type="file" accept="image/*"><div class="hint">Your images stay on your device.</div></section>
+ <section class="section"><h3>2. Add / Replace Picture</h3><label>Select new picture</label><input id="picFile" type="file" accept="image/*"><label>Picture size: <span id="scaleVal">100%</span></label><input id="scale" type="range" min="10" max="300" value="100"><div class="hint">Select and drag the added picture to change its position.</div><div class="btnrow"><button id="replaceBtn">Replace Selected</button><button id="addPicBtn">Add Picture</button></div></section>
+ <section class="section"><h3>3. Text Editor</h3><label>Enter text</label><textarea id="textInput" rows="2" placeholder="Write your text"></textarea><div class="grid2"><div><label>Font</label><select id="font"><option>Arial</option><option>Georgia</option><option>Impact</option><option>Verdana</option><option>Times New Roman</option><option>Courier New</option></select></div><div><label>Font size</label><input id="fontSize" type="number" min="8" max="300" value="42"></div><div><label>Text color</label><input id="textColor" type="color" value="#ffffff"></div><div><label>Outline color</label><input id="outlineColor" type="color" value="#111111"></div></div><div class="grid2"><div><label>Outline width</label><input id="outlineWidth" type="number" min="0" max="20" value="2"></div><div><label>Shadow</label><select id="shadow"><option value="0">Off</option><option value="1">Soft</option><option value="2">Strong</option></select></div></div><div class="btnrow"><button class="primary" id="addText">＋ Add Text</button><button id="updateText">Update Text</button></div></section>
+ <section class="section"><h3>4. Erase / Paint</h3><div class="grid2"><div><label>Tool</label><select id="tool"><option value="select">Select / Move</option><option value="paint">Paint Over</option><option value="erase">Erase (on added layer)</option></select></div><div><label>Brush color</label><input id="brushColor" type="color" value="#ffffff"></div></div><label>Brush size: <span id="brushVal">24</span></label><input id="brushSize" type="range" min="2" max="120" value="24"><div class="hint">Paint/erase works on the selected added layer. Background erasing is not destructive.</div></section>
+ <section class="section"><h3>5. Layers Manager</h3><div id="layers" class="layers"><div class="hint">No added layers yet.</div></div><div class="grid2" style="margin-top:8px"><button id="forward">Bring Forward</button><button id="backward">Send Backward</button><button class="danger" id="delete">Delete Layer</button><button id="deselect">Deselect</button><button id="undo">Undo</button><button id="redo">Redo</button><button id="reset">Reset All</button><button class="primary" id="export">Download PNG</button></div></section>
+ <div class="status" id="status">Upload an image to begin.</div>
+</aside>
+<main class="workspace"><div class="stagebar"><span>CANVAS • Select an object to edit</span><span id="canvasInfo">No image loaded</span></div><div class="stage-wrap" id="stage"><canvas id="canvas" width="900" height="600"></canvas><div class="empty" id="empty">Your image will appear here.<br>Upload an image to start editing.</div></div></main>
 </div>
-
-<div class="group">
-<h2>2. Add / Replace Picture</h2>
-<label>Select New Picture</label>
-<input id="addImage" type="file" accept="image/*">
-
-<label>Picture Size: <span id="scaleVal">100%</span></label>
-<input id="scale" type="range" min="10" max="300" value="100">
-<p class="hint">Select and drag the added picture to change its position.</p>
-</div>
-
-<div class="group">
-<h2>3. Text Editor</h2>
-
-<label>Enter Text</label>
-<input id="textValue" placeholder="Write your text">
-
-<div class="grid2">
-<div>
-<label>Font</label>
-<select id="font">
-<option>Arial</option>
-<option>Georgia</option>
-<option>Impact</option>
-<option>Verdana</option>
-<option>Courier New</option>
-<option>Times New Roman</option>
-</select>
-</div>
-
-<div>
-<label>Font Size</label>
-<input id="fontSize" type="number" min="8" max="300" value="42">
-</div>
-
-<div>
-<label>Text Color</label>
-<input id="textColor" type="color" value="#ffffff">
-</div>
-
-<div>
-<label>Outline Color</label>
-<input id="strokeColor" type="color" value="#111111">
-</div>
-</div>
-
-<div class="grid2">
-<button id="addText" class="primary">+ Add Text</button>
-<button id="updateText">Update Text</button>
-</div>
-</div>
-
-<div class="group">
-<h2>4. Erase / Paint</h2>
-
-<div class="grid2">
-<div>
-<label>Tool</label>
-<select id="tool">
-<option value="paint">Paint Over</option>
-<option value="erase">Erase Layers</option>
-</select>
-</div>
-
-<div>
-<label>Brush Color</label>
-<input id="brushColor" type="color" value="#ffffff">
-</div>
-</div>
-
-<label>Brush Size: <span id="brushVal">24</span></label>
-<input id="brushSize" type="range" min="2" max="180" value="24">
-</div>
-
-<div class="group">
-<h2>5. Layers Manager</h2>
-<div id="layers" class="layerlist">
-<span class="hint">No added layers yet.</span>
-</div>
-
-<div class="grid2">
-<button id="front">Bring Forward</button>
-<button id="back">Send Backward</button>
-<button id="delete" class="danger">Delete Layer</button>
-<button id="deselect">Deselect</button>
-<button id="undo">Undo</button>
-<button id="redo">Redo</button>
-<button id="reset">Reset All</button>
-<button id="download" class="primary">Download PNG</button>
-</div>
-</div>
-
-<div class="status" id="status">
-Upload an image to begin.
-</div>
-
-</section>
-
-<section class="panel editor">
-<div class="stage" id="stage">
-<div id="empty">
-Your image will appear here.<br>
-Upload an image to start editing.
-</div>
-<canvas id="canvas" hidden></canvas>
-</div>
-<p class="hint">
-Tap an object to select it. Drag to move.
-Use the corner handle to resize.
-</p>
-</section>
-
-</main>
-
 <script>
-const $=id=>document.getElementById(id);
-const c=$('canvas');
-const x=c.getContext('2d');
-
-let base=null;
-let baseLayer=null;
-let objects=[];
-let selected=-1;
-let painting=false;
-let last=null;
-let undoStack=[];
-let redoStack=[];
-let drag=null;
-
-const say=s=>$('status').textContent=s;
-
-function cloneState(){
- return JSON.stringify({
-  objects:objects.map(o=>o.type==='image'
-   ? {...o,imgSrc:o.img.src}
-   : {...o}),
-  selected,
-  baseData:baseLayer.toDataURL('image/png')
- });
+(()=>{
+const $=id=>document.getElementById(id), c=$('canvas'),ctx=c.getContext('2d');
+let bg=null,layers=[],selected=null,drag=null,history=[],future=[],painting=false,lastPoint=null;
+const uid=()=>Math.random().toString(36).slice(2,10);
+function say(s){$('status').textContent=s}
+function snapshot(){return JSON.stringify({layers:layers.map(l=>({...l,mask:l.mask||[]})),selected});}
+function save(){history.push(snapshot());if(history.length>40)history.shift();future=[];updateButtons()}
+function restore(s){let o=JSON.parse(s);layers=o.layers;selected=o.selected;render();listLayers()}
+function undo(){if(!history.length)return;future.push(snapshot());restore(history.pop());updateButtons()}
+function redo(){if(!future.length)return;history.push(snapshot());restore(future.pop());updateButtons()}
+function updateButtons(){$('undo').disabled=$('undoTop').disabled=!history.length;$('redo').disabled=$('redoTop').disabled=!future.length}
+function loadFile(file,cb){if(!file)return;let url=URL.createObjectURL(file),im=new Image();im.onload=()=>{URL.revokeObjectURL(url);cb(im)};im.src=url}
+function fitCanvas(im){let max=1800,scale=Math.min(1,max/Math.max(im.width,im.height));c.width=Math.round(im.width*scale);c.height=Math.round(im.height*scale);$('canvasInfo').textContent=c.width+' × '+c.height}
+function render(){
+ ctx.clearRect(0,0,c.width,c.height);
+ if(bg)ctx.drawImage(bg,0,0,c.width,c.height);
+ layers.forEach(l=>{ctx.save();if(l.type==='image'){ctx.drawImage(l.img,l.x,l.y,l.w,l.h);if(l.mask?.length){ctx.globalCompositeOperation='destination-out';l.mask.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()})}}
+ else if(l.type==='text'){ctx.font=`${l.weight||'normal'} ${l.size}px ${l.font}`;ctx.textAlign='left';ctx.textBaseline='top';if(l.shadow){ctx.shadowColor='rgba(0,0,0,.8)';ctx.shadowBlur=l.shadow===2?9:4;ctx.shadowOffsetX=2;ctx.shadowOffsetY=2}if(l.outline>0){ctx.lineWidth=l.outline*2;ctx.strokeStyle=l.outlineColor;ctx.strokeText(l.text,l.x,l.y)}ctx.fillStyle=l.color;ctx.fillText(l.text,l.x,l.y)}
+ ctx.restore();});
+ if(selected){let l=layers.find(x=>x.id===selected);if(l){let b=bounds(l);ctx.save();ctx.strokeStyle='#9b7bff';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.strokeRect(b.x,b.y,b.w,b.h);ctx.setLineDash([]);ctx.fillStyle='#9b7bff';ctx.fillRect(b.x+b.w-7,b.y+b.h-7,14,14);ctx.restore()}}
+ $('empty').style.display=bg?'none':'block';
 }
-
-function save(){
- if(!base)return;
- undoStack.push(cloneState());
- if(undoStack.length>35)undoStack.shift();
- redoStack=[];
- syncButtons();
-}
-
-function syncButtons(){
- $('undo').disabled=!undoStack.length;
- $('redo').disabled=!redoStack.length;
-}
-
-function imageFromFile(file,callback){
- if(!file || !file.type.startsWith('image/')){
-  say('Choose a valid image.');
-  return;
- }
- const reader=new FileReader();
- reader.onload=()=>{
-  const im=new Image();
-  im.onload=()=>callback(im);
-  im.onerror=()=>say('Unable to open image.');
-  im.src=reader.result;
- };
- reader.readAsDataURL(file);
-}
-
-function draw(){
- if(!base)return;
-
- x.clearRect(0,0,c.width,c.height);
- x.drawImage(baseLayer,0,0);
-
- objects.forEach(o=>{
-  if(o.type==='image'){
-   x.drawImage(o.img,o.x,o.y,o.w,o.h);
-  }else{
-   x.save();
-   x.font=`${o.size}px "${o.font}"`;
-   x.textBaseline='top';
-   x.lineJoin='round';
-
-   if(o.stroke){
-    x.strokeStyle=o.stroke;
-    x.lineWidth=Math.max(2,o.size/14);
-    x.strokeText(o.text,o.x,o.y);
-   }
-
-   x.fillStyle=o.color;
-   x.fillText(o.text,o.x,o.y);
-   x.restore();
-  }
- });
-
- if(selected>=0 && objects[selected]){
-  const o=objects[selected];
-  x.save();
-  x.strokeStyle='#8d79ff';
-  x.lineWidth=3;
-  x.setLineDash([7,5]);
-  x.strokeRect(o.x,o.y,o.w,o.h);
-  x.setLineDash([]);
-  x.fillStyle='#8d79ff';
-  x.fillRect(o.x+o.w-7,o.y+o.h-7,14,14);
-  x.restore();
- }
-}
-
-function fitView(){
- const maxW=Math.max(240,$('stage').clientWidth-18);
- const scale=Math.min(1,maxW/c.width);
- c.style.width=(c.width*scale)+'px';
- c.style.height=(c.height*scale)+'px';
-}
-
-function loadBase(file){
- imageFromFile(file,im=>{
-  base=im;
-  c.width=im.naturalWidth;
-  c.height=im.naturalHeight;
-
-  baseLayer=document.createElement('canvas');
-  baseLayer.width=c.width;
-  baseLayer.height=c.height;
-  baseLayer.getContext('2d').drawImage(im,0,0);
-
-  objects=[];
-  selected=-1;
-  undoStack=[];
-  redoStack=[];
-
-  $('empty').hidden=true;
-  c.hidden=false;
-
-  fitView();
-  draw();
-  renderLayers();
-  syncButtons();
-
-  say('Background image loaded successfully.');
- });
-}
-
-$('baseFile').onchange=e=>loadBase(e.target.files[0]);
-
-function addImage(im){
- save();
-
- const ratio=Math.min(
-  c.width*.45/im.width,
-  c.height*.45/im.height,
-  1
- );
-
- objects.push({
-  type:'image',
-  img:im,
-  x:(c.width-im.width*ratio)/2,
-  y:(c.height-im.height*ratio)/2,
-  w:im.width*ratio,
-  h:im.height*ratio
- });
-
- selected=objects.length-1;
- draw();
- renderLayers();
- updateScale();
- say('Picture added. Move and resize it.');
-}
-
-$('addImage').onchange=e=>{
- imageFromFile(e.target.files[0],addImage);
-};
-
-function addText(){
- if(!base)return say('Upload a background image first.');
-
- const text=$('textValue').value.trim();
- if(!text)return say('Enter some text.');
-
- save();
-
- const size=Math.max(8,Number($('fontSize').value)||42);
- x.font=`${size}px "${$('font').value}"`;
-
- const w=x.measureText(text).width;
-
- objects.push({
-  type:'text',
-  text,
-  x:c.width*.1,
-  y:c.height*.1,
-  w,
-  h:size*1.25,
-  size,
-  font:$('font').value,
-  color:$('textColor').value,
-  stroke:$('strokeColor').value
- });
-
- selected=objects.length-1;
- draw();
- renderLayers();
- say('Text added. Drag it to position.');
-}
-
-$('addText').onclick=addText;
-
-$('updateText').onclick=()=>{
- const o=objects[selected];
-
- if(!o || o.type!=='text')
-  return say('Select a text layer first.');
-
- const t=$('textValue').value.trim();
- if(!t)return say('Enter replacement text.');
-
- save();
-
- o.text=t;
- o.size=Math.max(8,Number($('fontSize').value)||42);
- o.font=$('font').value;
- o.color=$('textColor').value;
- o.stroke=$('strokeColor').value;
-
- x.font=`${o.size}px "${o.font}"`;
- o.w=x.measureText(t).width;
- o.h=o.size*1.25;
-
- draw();
- renderLayers();
- say('Text updated.');
-};
-
-function renderLayers(){
- const el=$('layers');
- el.innerHTML='';
-
- if(!objects.length){
-  el.innerHTML='<span class="hint">No added layers yet.</span>';
-  return;
- }
-
- objects.forEach((o,i)=>{
-  const b=document.createElement('button');
-
-  b.textContent=o.type==='text'
-   ? 'T - '+o.text.slice(0,24)
-   : 'Picture '+(i+1);
-
-  b.className=i===selected?'active':'';
-
-  b.onclick=()=>{
-   selected=i;
-   draw();
-   renderLayers();
-   loadFields();
-  };
-
-  el.appendChild(b);
- });
-}
-
-function loadFields(){
- const o=objects[selected];
- if(!o)return;
-
- if(o.type==='text'){
-  $('textValue').value=o.text;
-  $('fontSize').value=o.size;
-  $('font').value=o.font;
-  $('textColor').value=o.color;
-  $('strokeColor').value=o.stroke||'#111111';
- }
-
- updateScale();
-}
-
-function updateScale(){
- const o=objects[selected];
-
- if(o && o.type==='image'){
-  const value=Math.round(o.w/o.img.width*100);
-  $('scale').value=Math.min(300,Math.max(10,value));
-  $('scaleVal').textContent=value+'%';
- }
-}
-
-$('scale').onpointerdown=save;
-
-$('scale').oninput=()=>{
- const o=objects[selected];
- if(!o || o.type!=='image')return;
-
- const pct=Number($('scale').value);
- $('scaleVal').textContent=pct+'%';
-
- const nw=o.img.width*pct/100;
- const nh=o.img.height*pct/100;
-
- o.x+=(o.w-nw)/2;
- o.y+=(o.h-nh)/2;
- o.w=nw;
- o.h=nh;
-
- draw();
-};
-
-$('brushSize').oninput=()=>{
- $('brushVal').textContent=$('brushSize').value;
-};
-
-function pointer(e){
- const r=c.getBoundingClientRect();
-
- return {
-  x:(e.clientX-r.left)*c.width/r.width,
-  y:(e.clientY-r.top)*c.height/r.height
- };
-}
-
-function hit(p){
- for(let i=objects.length-1;i>=0;i--){
-  const o=objects[i];
-
-  if(p.x>=o.x && p.x<=o.x+o.w &&
-     p.y>=o.y && p.y<=o.y+o.h)
-   return i;
- }
- return -1;
-}
-
-function paint(p){
- const bx=baseLayer.getContext('2d');
-
- const radius=Number($('brushSize').value)*
-  c.width/c.getBoundingClientRect().width/2;
-
- bx.save();
- bx.fillStyle=$('brushColor').value;
- bx.beginPath();
- bx.arc(p.x,p.y,radius,0,Math.PI*2);
- bx.fill();
- bx.restore();
-
- draw();
-}
-
-c.addEventListener('pointerdown',e=>{
- if(!base)return;
-
- const p=pointer(e);
-
- if($('tool').value==='paint'){
-  save();
-  painting=true;
-  last=p;
-  paint(p);
-  c.setPointerCapture(e.pointerId);
-  return;
- }
-
- if($('tool').value==='erase'){
-  const i=hit(p);
-
-  if(i>=0){
-   save();
-   objects.splice(i,1);
-   selected=-1;
-   draw();
-   renderLayers();
-   say('Layer removed.');
-  }
-  return;
- }
-
- const i=hit(p);
- selected=i;
-
- if(i>=0){
-  save();
-
-  const o=objects[i];
-  const handle=Math.max(14,c.width/55);
-
-  const onHandle=
-   Math.abs(p.x-(o.x+o.w))<handle &&
-   Math.abs(p.y-(o.y+o.h))<handle;
-
-  drag={
-   kind:onHandle?'resize':'move',
-   i,
-   start:p,
-   ox:o.x,
-   oy:o.y,
-   ow:o.w,
-   oh:o.h
-  };
-
-  c.setPointerCapture(e.pointerId);
- }
-
- draw();
- renderLayers();
- loadFields();
-});
-
-c.addEventListener('pointermove',e=>{
- const p=pointer(e);
-
- if(painting){
-  const bx=baseLayer.getContext('2d');
-
-  const r=Number($('brushSize').value)*
-   c.width/c.getBoundingClientRect().width;
-
-  bx.save();
-  bx.strokeStyle=$('brushColor').value;
-  bx.lineWidth=r;
-  bx.lineCap='round';
-  bx.beginPath();
-  bx.moveTo(last.x,last.y);
-  bx.lineTo(p.x,p.y);
-  bx.stroke();
-  bx.restore();
-
-  last=p;
-  draw();
-  return;
- }
-
- if(drag){
-  const o=objects[drag.i];
-
-  if(drag.kind==='move'){
-   o.x=drag.ox+(p.x-drag.start.x);
-   o.y=drag.oy+(p.y-drag.start.y);
-  }else{
-   o.w=Math.max(12,drag.ow+(p.x-drag.start.x));
-   o.h=Math.max(12,drag.oh+(p.y-drag.start.y));
-  }
-
-  draw();
- }
-});
-
-function end(){
- painting=false;
- last=null;
- drag=null;
-}
-
-c.addEventListener('pointerup',end);
-c.addEventListener('pointercancel',end);
-c.addEventListener('lostpointercapture',end);
-
-$('delete').onclick=()=>{
- if(selected<0)return;
-
- save();
- objects.splice(selected,1);
- selected=-1;
-
- draw();
- renderLayers();
- say('Selected layer deleted.');
-};
-
-$('deselect').onclick=()=>{
- selected=-1;
- draw();
- renderLayers();
-};
-
-$('front').onclick=()=>{
- if(selected<0 || selected===objects.length-1)return;
-
- save();
-
- const o=objects.splice(selected,1)[0];
- objects.push(o);
- selected=objects.length-1;
-
- draw();
- renderLayers();
-};
-
-$('back').onclick=()=>{
- if(selected<=0)return;
-
- save();
-
- const o=objects.splice(selected,1)[0];
- objects.unshift(o);
- selected=0;
-
- draw();
- renderLayers();
-};
-
-function restoreState(state){
- const s=JSON.parse(state);
-
- objects=s.objects.map(o=>{
-  if(o.type==='image'){
-   const im=new Image();
-   im.src=o.imgSrc;
-   o.img=im;
-  }
-  return o;
- });
-
- selected=s.selected;
-
- const bg=new Image();
-
- bg.onload=()=>{
-  baseLayer.width=bg.naturalWidth;
-  baseLayer.height=bg.naturalHeight;
-  baseLayer.getContext('2d').drawImage(bg,0,0);
-  draw();
-  renderLayers();
- };
-
- bg.src=s.baseData;
-}
-
-$('undo').onclick=()=>{
- if(!undoStack.length)return;
-
- redoStack.push(cloneState());
- restoreState(undoStack.pop());
-
- syncButtons();
- say('Undo complete.');
-};
-
-$('redo').onclick=()=>{
- if(!redoStack.length)return;
-
- undoStack.push(cloneState());
- restoreState(redoStack.pop());
-
- syncButtons();
- say('Redo complete.');
-};
-
-$('reset').onclick=()=>{
- if(!base)return;
-
- objects=[];
- selected=-1;
-
- baseLayer=document.createElement('canvas');
- baseLayer.width=c.width;
- baseLayer.height=c.height;
- baseLayer.getContext('2d').drawImage(base,0,0);
-
- undoStack=[];
- redoStack=[];
-
- draw();
- renderLayers();
- syncButtons();
-
- say('Image reset.');
-};
-
-$('download').onclick=()=>{
- if(!base)return say('Upload an image first.');
-
- const out=document.createElement('canvas');
- out.width=c.width;
- out.height=c.height;
-
- const ox=out.getContext('2d');
-
- ox.drawImage(baseLayer,0,0);
-
- objects.forEach(o=>{
-  if(o.type==='image'){
-   ox.drawImage(o.img,o.x,o.y,o.w,o.h);
-  }else{
-   ox.font=`${o.size}px "${o.font}"`;
-   ox.textBaseline='top';
-   ox.lineJoin='round';
-
-   if(o.stroke){
-    ox.strokeStyle=o.stroke;
-    ox.lineWidth=Math.max(2,o.size/14);
-    ox.strokeText(o.text,o.x,o.y);
-   }
-
-   ox.fillStyle=o.color;
-   ox.fillText(o.text,o.x,o.y);
-  }
- });
-
- const a=document.createElement('a');
- a.download='rohit-image-studio.png';
- a.href=out.toDataURL('image/png');
- a.click();
-
- say('PNG download started.');
-};
-
-window.addEventListener('resize',()=>{
- if(base)fitView();
-});
-</script>
-</body>
-</html>
+function bounds(l){if(l.type==='image')return{x:l.x,y:l.y,w:l.w,h:l.h};ctx.font=`${l.size}px ${l.font}`;return{x:l.x,y:l.y,w:Math.max(30,ctx.measureText(l.text).width),h:l.size*1.25}}
+function listLayers(){let box=$('layers');box.innerHTML='';if(!layers.length){box.innerHTML='<div class="hint">No added layers yet.</div>';return}layers.slice().reverse().forEach((l)=>{let d=document.createElement('div');d.className='layer'+(l.id===selected?' active':'');let name=l.type==='text'?'T · '+l.text:'▧ · '+l.name;let sp=document.createElement('span');sp.textContent=name;let sm=document.createElement('small');sm.textContent=l.type;d.append(sp,sm);d.onclick=()=>{selected=l.id;syncText();render();listLayers()};box.append(d)})}
+function syncText(){let l=layers.find(x=>x.id===selected);if(l?.type==='text'){$('textInput').value=l.text;$('font').value=l.font;$('fontSize').value=l.size;$('textColor').value=l.color;$('outlineColor').value=l.outlineColor;$('outlineWidth').value=l.outline;$('shadow').value=l.shadow||0}}
+function addImage(im,name){let maxW=c.width*.65,ratio=Math.min(1,maxW/im.width);let w=im.width*ratio,h=im.height*ratio;save();let l={id:uid(),type:'image',img:im,name:name||'Picture',x:(c.width-w)/2,y:(c.height-h)/2,w,h,baseW:w,baseH:h,mask:[]};layers.push(l);selected=l.id;render();listLayers();say('Picture added. Drag it on the canvas.')}
+$('bgFile').onchange=e=>loadFile(e.target.files[0],im=>{bg=im;fitCanvas(im);layers=[];selected=null;history=[];future=[];render();listLayers();updateButtons();say('Background loaded.')});
+$('picFile').onchange=e=>{let f=e.target.files[0];if(f)loadFile(f,im=>{window.pendingImage={im,name:f.name};say('Picture ready. Choose Add Picture or Replace Selected.')})};
+$('addPicBtn').onclick=()=>{if(window.pendingImage)addImage(window.pendingImage.im,window.pendingImage.name)};
+$('replaceBtn').onclick=()=>{let l=layers.find(x=>x.id===selected);if(!l||l.type!=='image'||!window.pendingImage)return say('Select an image layer first.');save();let im=window.pendingImage.im;l.img=im;l.name=window.pendingImage.name;l.w=im.width;l.h=im.height;let k=Math.min(1,c.width*.65/l.w);l.w*=k;l.h*=k;l.baseW=l.w;l.baseH=l.h;render();listLayers()};
+$('scale').oninput=e=>{let l=layers.find(x=>x.id===selected);$('scaleVal').textContent=e.target.value+'%';if(l?.type==='image'){let old=bounds(l);let nw=l.baseW*e.target.value/100,nh=l.baseH*e.target.value/100;l.x+= (old.w-nw)/2;l.y+=(old.h-nh)/2;l.w=nw;l.h=nh;render()}};
+$('addText').onclick=()=>{let t=$('textInput').value.trim();if(!t)return say('Enter text first.');save();let l={id:uid(),type:'text',text:t,x:c.width*.12,y:c.height*.12,font:$('font').value,size:Math.max(8,+$('fontSize').value||42),color:$('textColor').value,outlineColor:$('outlineColor').value,outline:Math.max(0,+$('outlineWidth').value||0),shadow:+$('shadow').value};layers.push(l);selected=l.id;render();listLayers();say('Text added. Drag it to position.')};
+$('updateText').onclick=()=>{let l=layers.find(x=>x.id===selected);if(!l||l.type!=='text')return say('Select a text layer first.');save();Object.assign(l,{text:$('textInput').value,font:$('font').value,size:+$('fontSize').value,color:$('textColor').value,outlineColor:$('outlineColor').value,outline:+$('outlineWidth').value,shadow:+$('shadow').value});render();listLayers()};
+function pos(e){let r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height}}
+function hit(p){for(let i=layers.length-1;i>=0;i--){let b=bounds(layers[i]);if(p.x>=b.x-5&&p.x<=b.x+b.w+8&&p.y>=b.y-5&&p.y<=b.y+b.h+8)return layers[i]}return null}
+c.addEventListener('pointerdown',e=>{let p=pos(e),tool=$('tool').value;if(tool==='paint'||tool==='erase'){let l=layers.find(x=>x.id===selected);if(!l||l.type!=='image')return say('Select an added picture layer to paint or erase.');save();painting=true;lastPoint=p;c.setPointerCapture(e.pointerId);brush(p,l,tool);return}let l=hit(p);if(l){selected=l.id;save();drag={id:l.id,dx:p.x-l.x,dy:p.y-l.y};syncText();listLayers()}else{selected=null;listLayers()}render()});
+c.addEventListener('pointermove',e=>{let p=pos(e);if(painting){let l=layers.find(x=>x.id===selected);if(l)brush(p,l,$('tool').value);lastPoint=p;render();return}if(drag){let l=layers.find(x=>x.id===drag.id);if(l){l.x=p.x-drag.dx;l.y=p.y-drag.dy;render()}}});
+function brush(p,l,tool){let r=+$('brushSize').value/2;if(tool==='erase'){l.mask.push({x:p.x-l.x,y:p.y-l.y,r})}else{let cv=document.createElement('canvas');cv.width=Math.max(1,Math.ceil(l.w));cv.height=Math.max(1,Math.ceil(l.h));let x=cv.getContext('2d');x.drawImage(l.img,0,0,l.w,l.h);x.fillStyle=$('brushColor').value;x.beginPath();x.arc(p.x-l.x,p.y-l.y,r,0,Math.PI*2);x.fill();let im=new Image();im.src=cv.toDataURL();im.onload=()=>{l.img=im;render()}}}
+c.addEventListener('pointerup',()=>{painting=false;drag=null});c.addEventListener('pointercancel',()=>{painting=false;drag=null});
+$('brushSize').oninput=e=>$('brushVal').textContent=e.target.value;
+$('forward').onclick=()=>moveLayer(1);$('backward').onclick=()=>moveLayer(-1);
+function moveLayer(n){let i=layers.findIndex(l=>l.id===selected);if(i<0)return;let j=Math.max(0,Math.min(layers.length-1,i+n));if(i===j)return;save();[layers[i],layers[j]]=[layers[j],layers[i]];render();listLayers()}
+$('delete').onclick=()=>{let i=layers.findIndex(l=>l.id===selected);if(i<0)return;save();layers.splice(i,1);selected=null;render();listLayers()};
+$('deselect').onclick=()=>{selected=null;render();listLayers()};
+$('undo').onclick=$('undoTop').onclick=undo;$('redo').onclick=$('redoTop').onclick=redo;
+$('reset').onclick=()=>{if(!confirm('Reset the complete project?'))return;save();bg=null;layers=[];selected=null;c.width=900;c.height=600;render();listLayers();say('Canvas reset.')};
+function exportPNG(){if(!bg&&!layers.length)return say('Add an image before exporting.');let old=selected;selected=null;render();let a=document.createElement('a');a.download='rohit-image-studio.png';a.href=c.toDataURL('image/png');a.click();selected=old;render();say('PNG exported successfully.')}
+$('export').onclick=$('exportTop').onclick=exportPNG;
+render();listLayers();updateButtons();
+})();
+</script></body></html>
